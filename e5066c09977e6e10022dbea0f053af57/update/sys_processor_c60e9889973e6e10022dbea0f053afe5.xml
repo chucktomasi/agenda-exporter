@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_processor">
+    <sys_processor action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <class_name/>
+        <description>Export an entire agenda course record with days, modules, items, and M2M lists.</description>
+        <interactive>false</interactive>
+        <name>ExportCourse</name>
+        <parameters/>
+        <params_endpoint/>
+        <path>export_course</path>
+        <path_endpoint/>
+        <require_csrf>false</require_csrf>
+        <roles>snc_internal</roles>
+        <script><![CDATA[(function process(g_request, g_response, g_processor) {
+	var sysid = g_request.getParameter('sysparm_sys_id');
+	// gs.info('** Course agenda ' + sysid);
+
+	//Name all the related lists
+	var exporter = new global.ExportWithRelatedLists(x_snc_agenda.Constants.COURSE_TABLE, sysid);
+	exporter.addRelatedList(x_snc_agenda.Constants.DAY_TABLE, 'course');
+	exporter.addRelatedList(x_snc_agenda.Constants.MODULE_TABLE, 'course');
+	exporter.addRelatedList(x_snc_agenda.Constants.NOW_ITEM_TABLE, 'course');
+
+	var m2mModuleList = [];
+	var m2mNowItemList = [];
+
+	//Query for M2M day/modules
+	var m2mMod = new GlideRecord(x_snc_agenda.Constants.DAY_MODULE_M2M);
+	m2mMod.addQuery('day.course', sysid);
+	m2mMod.query();
+	while (m2mMod.next()){
+		m2mModuleList.push(m2mMod.getUniqueValue());
+	}
+	//Query for M2M day/now_items
+	var m2mItem = new GlideRecord(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M);
+	m2mItem.addQuery('day.course', sysid);
+	m2mItem.query();
+	while (m2mItem.next()){
+		m2mNowItemList.push(m2mItem.getUniqueValue());
+	}
+/*
+	var m2mCard = new GlideRecord(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M);
+	m2mCard.addQuery('course', sysid);
+	m2mCard.query();
+	while (m2mCard.next()){
+		m2mCardList.push(m2mCard.getUniqueValue());
+
+		var cardGr = new GlideRecord('x_snc_agenda_card');
+		cardGr.addQuery('sys_id', m2mCard.getValue('card'));
+		cardGr.query();
+		if (cardGr.next()) {
+			cardList.push(cardGr.getUniqueValue());
+		}
+	}
+*/
+	exporter.addQuerySet(x_snc_agenda.Constants.DAY_MODULE_M2M, 'sys_idIN' + m2mModuleList.join(','));
+	exporter.addQuerySet(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M, 'sys_idIN' + m2mNowItemList.join(','));
+	/*
+	exporter.addQuerySet('x_snc_agenda_m2m_game_card', 'sys_idIN' + m2mCardList.join(','));
+	exporter.addQuerySet('x_snc_agenda_category', 'sys_idIN' + catList.join(','));
+	exporter.addQuerySet('x_snc_agenda_card', 'sys_idIN' + cardListText);
+	exporter.addQuerySet('sys_attachment', 'table_sys_idIN' + cardListText);
+	exporter.addQuerySet('sys_attachment_doc', 'sys_attachmentIN' + attList.join(','));
+	*/
+	exporter.exportRecords(g_response);
+	
+})(g_request, g_response, g_processor);]]></script>
+        <sys_class_name>sys_processor</sys_class_name>
+        <sys_created_by>chuck.tomasi@gmail.com</sys_created_by>
+        <sys_created_on>2025-07-15 18:28:49</sys_created_on>
+        <sys_id>c60e9889973e6e10022dbea0f053afe5</sys_id>
+        <sys_mod_count>6</sys_mod_count>
+        <sys_name>ExportCourse</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Agenda Exporter">e5066c09977e6e10022dbea0f053af57</sys_scope>
+        <sys_update_name>sys_processor_c60e9889973e6e10022dbea0f053afe5</sys_update_name>
+        <sys_updated_by>chuck.tomasi@gmail.com</sys_updated_by>
+        <sys_updated_on>2025-07-15 19:04:48</sys_updated_on>
+        <type>script</type>
+        <xframe_sameorigin>false</xframe_sameorigin>
+    </sys_processor>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Agenda Exporter">e5066c09977e6e10022dbea0f053af57</claim_owner_scope>
+        <claim_timestamp>1980f79ac100000001</claim_timestamp>
+        <metadata_update_name>sys_processor_c60e9889973e6e10022dbea0f053afe5</metadata_update_name>
+        <previous_claim_app_version>1.0.0</previous_claim_app_version>
+        <previous_claim_name>Agenda Exporter</previous_claim_name>
+        <previous_claim_scope>e5066c09977e6e10022dbea0f053af57</previous_claim_scope>
+        <sys_created_by>chuck.tomasi@gmail.com</sys_created_by>
+        <sys_created_on>2025-07-15 19:04:48</sys_created_on>
+        <sys_id>1486a849977e6e10022dbea0f053afd0</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>chuck.tomasi@gmail.com</sys_updated_by>
+        <sys_updated_on>2025-07-15 19:04:48</sys_updated_on>
+    </sys_claim>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>c60e9889973e6e10022dbea0f053afe5</id>
+        <sys_created_by>chuck.tomasi@gmail.com</sys_created_by>
+        <sys_created_on>2025-07-15 18:28:48</sys_created_on>
+        <sys_id>c94e10c9973e6e10022dbea0f053af7f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>chuck.tomasi@gmail.com</sys_updated_by>
+        <sys_updated_on>2025-07-15 18:28:48</sys_updated_on>
+        <table>sys_processor</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
