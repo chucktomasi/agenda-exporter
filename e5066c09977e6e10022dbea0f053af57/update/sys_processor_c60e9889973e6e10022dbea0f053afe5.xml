@@ -23,6 +23,7 @@
 
 	var m2mModuleList = [];
 	var m2mNowItemList = [];
+	var verList = [];
 
 	//Query for M2M day/modules
 	var m2mMod = new GlideRecord(x_snc_agenda.Constants.DAY_MODULE_M2M);
@@ -38,30 +39,16 @@
 	while (m2mItem.next()){
 		m2mNowItemList.push(m2mItem.getUniqueValue());
 	}
-/*
-	var m2mCard = new GlideRecord(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M);
-	m2mCard.addQuery('course', sysid);
-	m2mCard.query();
-	while (m2mCard.next()){
-		m2mCardList.push(m2mCard.getUniqueValue());
-
-		var cardGr = new GlideRecord('x_snc_agenda_card');
-		cardGr.addQuery('sys_id', m2mCard.getValue('card'));
-		cardGr.query();
-		if (cardGr.next()) {
-			cardList.push(cardGr.getUniqueValue());
-		}
+	//Query for SN versions
+	var verGr = new GlideRecord(x_snc_agenda.Constants.VERSION_TABLE);
+	verGr.query();
+	while (verGr.next()) {
+		verList.push(verGr.getUniqueValue());
 	}
-*/
 	exporter.addQuerySet(x_snc_agenda.Constants.DAY_MODULE_M2M, 'sys_idIN' + m2mModuleList.join(','));
 	exporter.addQuerySet(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M, 'sys_idIN' + m2mNowItemList.join(','));
-	/*
-	exporter.addQuerySet('x_snc_agenda_m2m_game_card', 'sys_idIN' + m2mCardList.join(','));
-	exporter.addQuerySet('x_snc_agenda_category', 'sys_idIN' + catList.join(','));
-	exporter.addQuerySet('x_snc_agenda_card', 'sys_idIN' + cardListText);
-	exporter.addQuerySet('sys_attachment', 'table_sys_idIN' + cardListText);
-	exporter.addQuerySet('sys_attachment_doc', 'sys_attachmentIN' + attList.join(','));
-	*/
+	exporter.addQuerySet(x_snc_agenda.Constants.VERSION_TABLE, 'sys_idIN' + verList.join(','));
+
 	exporter.exportRecords(g_response);
 	
 })(g_request, g_response, g_processor);]]></script>
@@ -69,14 +56,14 @@
         <sys_created_by>chuck.tomasi@gmail.com</sys_created_by>
         <sys_created_on>2025-07-15 18:28:49</sys_created_on>
         <sys_id>c60e9889973e6e10022dbea0f053afe5</sys_id>
-        <sys_mod_count>6</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>ExportCourse</sys_name>
         <sys_package display_value="Global" source="global">global</sys_package>
         <sys_policy/>
         <sys_scope display_value="Agenda Exporter">e5066c09977e6e10022dbea0f053af57</sys_scope>
         <sys_update_name>sys_processor_c60e9889973e6e10022dbea0f053afe5</sys_update_name>
         <sys_updated_by>chuck.tomasi@gmail.com</sys_updated_by>
-        <sys_updated_on>2025-07-15 19:04:48</sys_updated_on>
+        <sys_updated_on>2025-08-12 03:22:46</sys_updated_on>
         <type>script</type>
         <xframe_sameorigin>false</xframe_sameorigin>
     </sys_processor>
