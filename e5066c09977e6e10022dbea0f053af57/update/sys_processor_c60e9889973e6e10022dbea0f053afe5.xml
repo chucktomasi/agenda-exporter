@@ -12,11 +12,11 @@
         <require_csrf>false</require_csrf>
         <roles>snc_internal</roles>
         <script><![CDATA[(function process(g_request, g_response, g_processor) {
-	var sysid = g_request.getParameter('sysparm_sys_id');
-	// gs.info('** Course agenda ' + sysid);
+	var courseID = g_request.getParameter('sysparm_sys_id');
+	// gs.info('** Course agenda ' + courseID);
 
 	//Name all the related lists
-	var exporter = new global.ExportWithRelatedLists(x_snc_agenda.Constants.COURSE_TABLE, sysid);
+	var exporter = new global.ExportWithRelatedLists(x_snc_agenda.Constants.COURSE_TABLE, courseID);
 	exporter.addRelatedList(x_snc_agenda.Constants.DAY_TABLE, 'course');
 	exporter.addRelatedList(x_snc_agenda.Constants.MODULE_TABLE, 'course');
 	exporter.addRelatedList(x_snc_agenda.Constants.NOW_ITEM_TABLE, 'course');
@@ -24,17 +24,18 @@
 	var m2mModuleList = [];
 	var m2mNowItemList = [];
 	var verList = [];
+	var attList = [];
 
 	//Query for M2M day/modules
 	var m2mMod = new GlideRecord(x_snc_agenda.Constants.DAY_MODULE_M2M);
-	m2mMod.addQuery('day.course', sysid);
+	m2mMod.addQuery('day.course', courseID);
 	m2mMod.query();
 	while (m2mMod.next()){
 		m2mModuleList.push(m2mMod.getUniqueValue());
 	}
 	//Query for M2M day/now_items
 	var m2mItem = new GlideRecord(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M);
-	m2mItem.addQuery('day.course', sysid);
+	m2mItem.addQuery('day.course', courseID);
 	m2mItem.query();
 	while (m2mItem.next()){
 		m2mNowItemList.push(m2mItem.getUniqueValue());
@@ -45,9 +46,78 @@
 	while (verGr.next()) {
 		verList.push(verGr.getUniqueValue());
 	}
+//Query for Attachments
+	// 1. Get sys_ids of days, modules, and Now Items related to this course
+	var dayList = [];
+	var modList = [];
+	var nowItemList = [];
+
+	var dayGr = new GlideRecord(x_snc_agenda.Constants.DAY_TABLE);
+	dayGr.addQuery('course', courseID);
+	dayGr.query();
+
+	while (dayGr.next()) {
+		dayList.push(dayGr.getUniqueValue());
+	}
+
+	var nowItemGr = new GlideRecord(x_snc_agenda.Constants.NOW_ITEM_TABLE);
+	nowItemGr.addQuery('course', courseID);
+	nowItemGr.query();
+
+	while (nowItemGr.next()) {
+		nowItemList.push(nowItemGr.getUniqueValue());
+	}
+
+	var modGr = new GlideRecord(x_snc_agenda.Constants.MODULE_TABLE);
+	modGr.addQuery('course', courseID);
+	modGr.query();
+
+	while (modGr.next()) {
+		modList.push(modGr.getUniqueValue());
+	}
+
+	/*
+	gs.info('>>>DEBUG:\n***dayList=\n' + dayList.join('\n') +
+		'\n***nowItemList=\n' + nowItemList.join('\n') +
+		'\n***modList=\n' + modList.join('\n'));
+	*/
+
+	// 2. Build a list of all sys_ids for the attachment records
+	var attTargetList = dayList.concat(nowItemList, modList);
+	attTargetList.push(courseID);
+	
+	// gs.info('>>>DEBUG:\n***attTargetList=\n' + attTargetList.join('\n'));
+
+	// 3. Build the list of attachments to get
+
+	var attList = [];
+	var attGr = new GlideRecord('sys_attachment');
+	attGr.addQuery('table_sys_id', 'IN', attTargetList.join(','));
+	attGr.query();
+
+	while (attGr.next()) {
+		attList.push(attGr.getUniqueValue());
+	}
+
+	// 4. Build the list of attachment docs to get
+
+	var attDocList = [];
+	var attDocGr = new GlideRecord('sys_attachment_doc');
+	attDocGr.addQuery('sys_attachment', 'IN', attList.join(','));
+	attDocGr.query();
+
+	while (attDocGr.next()) {
+		attDocList.push(attDocGr.getUniqueValue());
+	}
+
+	gs.info('>>>DEBUG:\n***attList=' + attList.join('\n') +
+		'\n***attDocList=' + attDocList.join('\n'));
+
 	exporter.addQuerySet(x_snc_agenda.Constants.DAY_MODULE_M2M, 'sys_idIN' + m2mModuleList.join(','));
 	exporter.addQuerySet(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M, 'sys_idIN' + m2mNowItemList.join(','));
 	exporter.addQuerySet(x_snc_agenda.Constants.VERSION_TABLE, 'sys_idIN' + verList.join(','));
+	exporter.addQuerySet('sys_attachment', 'sys_idIN' + attList.join(','));
+	exporter.addQuerySet('sys_attachment_doc', 'sys_idIN' + attDocList.join(','));
 
 	exporter.exportRecords(g_response);
 	
@@ -56,14 +126,14 @@
         <sys_created_by>chuck.tomasi@gmail.com</sys_created_by>
         <sys_created_on>2025-07-15 18:28:49</sys_created_on>
         <sys_id>c60e9889973e6e10022dbea0f053afe5</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>21</sys_mod_count>
         <sys_name>ExportCourse</sys_name>
         <sys_package display_value="Global" source="global">global</sys_package>
         <sys_policy/>
         <sys_scope display_value="Agenda Exporter">e5066c09977e6e10022dbea0f053af57</sys_scope>
         <sys_update_name>sys_processor_c60e9889973e6e10022dbea0f053afe5</sys_update_name>
         <sys_updated_by>chuck.tomasi@gmail.com</sys_updated_by>
-        <sys_updated_on>2025-08-12 03:22:46</sys_updated_on>
+        <sys_updated_on>2025-08-20 12:40:23</sys_updated_on>
         <type>script</type>
         <xframe_sameorigin>false</xframe_sameorigin>
     </sys_processor>
