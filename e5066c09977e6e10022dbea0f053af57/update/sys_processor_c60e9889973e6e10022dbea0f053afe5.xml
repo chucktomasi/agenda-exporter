@@ -110,8 +110,8 @@
 		attDocList.push(attDocGr.getUniqueValue());
 	}
 
-	gs.info('>>>DEBUG:\n***attList=' + attList.join('\n') +
-		'\n***attDocList=' + attDocList.join('\n'));
+	// gs.info('>>>DEBUG:\n***attList=' + attList.join('\n') +
+	//	'\n***attDocList=' + attDocList.join('\n'));
 
 	exporter.addQuerySet(x_snc_agenda.Constants.DAY_MODULE_M2M, 'sys_idIN' + m2mModuleList.join(','));
 	exporter.addQuerySet(x_snc_agenda.Constants.DAY_NOW_ITEM_M2M, 'sys_idIN' + m2mNowItemList.join(','));
@@ -126,14 +126,14 @@
         <sys_created_by>chuck.tomasi@gmail.com</sys_created_by>
         <sys_created_on>2025-07-15 18:28:49</sys_created_on>
         <sys_id>c60e9889973e6e10022dbea0f053afe5</sys_id>
-        <sys_mod_count>21</sys_mod_count>
+        <sys_mod_count>22</sys_mod_count>
         <sys_name>ExportCourse</sys_name>
         <sys_package display_value="Global" source="global">global</sys_package>
         <sys_policy/>
         <sys_scope display_value="Agenda Exporter">e5066c09977e6e10022dbea0f053af57</sys_scope>
         <sys_update_name>sys_processor_c60e9889973e6e10022dbea0f053afe5</sys_update_name>
         <sys_updated_by>chuck.tomasi@gmail.com</sys_updated_by>
-        <sys_updated_on>2025-08-20 12:40:23</sys_updated_on>
+        <sys_updated_on>2025-08-20 13:00:33</sys_updated_on>
         <type>script</type>
         <xframe_sameorigin>false</xframe_sameorigin>
     </sys_processor>
